@@ -15,6 +15,7 @@ import urllib.request
 url='https://abc.de/'
 urllib.request.urlretrieve(url, 'test.html')
 ```
+
 ![403 forbidden错误](http://img.blog.csdn.net/20170730204724978?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvRG9uYWxkX1podWFuZw==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast)
 　　这个网站是练第一关的，解法是通过urllib.request添加http请求头部字段，实现模拟浏览器访问，代码如下：
 ``` python
@@ -38,9 +39,13 @@ data = urllib.request.urlopen(req).read()
 print(data)
 ```
 　　实际测试效果如下，不再提示403 forbidden了，也就是反爬成功。不过新问题出现，一大波乱码，一开始我以为是编码问题，于是根据网页的charset信息加了data.decode('utf-8')，但测试提示报错，随后尝试各种编解码方式都没有用。
+
 ![绕过反爬出现乱码](http://img.blog.csdn.net/20170730204926159?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvRG9uYWxkX1podWFuZw==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast)
+
 　　重新回来看response header，在看到content-encoding字段的时候，才想起还有一个幺蛾子，所以参考[Python 抓取网页乱码原因分析](https://zhuanlan.zhihu.com/p/21057822)介绍补刀
+
 ![header信息](http://img.blog.csdn.net/20170730205159064?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvRG9uYWxkX1podWFuZw==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast)
+
 　　专栏代码实现不能直接套用，有错误，因此添加调整代码如下：
 
 ``` python
@@ -62,6 +67,7 @@ if encoding == 'gzip':
     
 print(content)
 ```
+
 　　测试效果如下，成功绕过反爬策略和实现gzip解压
 ![绕过成功](http://img.blog.csdn.net/20170730205313413?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvRG9uYWxkX1podWFuZw==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast)
 
