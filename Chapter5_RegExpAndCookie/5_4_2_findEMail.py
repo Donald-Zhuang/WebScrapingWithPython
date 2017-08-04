@@ -7,7 +7,7 @@ import re
 
 ReqUrl = "http://www.shlanbao.cn/contact/"
 
-Pattern_Email = "\w+@\w+(\.\w+)*"
+Pattern_Email = "\w[.\w]+@\w+[\.\w]*"
 def PrintRet(ret):
     if ret == None:
         print("[WARN] Nothing you need has been found in this website.")
@@ -22,8 +22,8 @@ def ReadDataFromURL():
     return content
 
 def FindURL(string):
-    ret = re.findall(Pattern_Email, string,re.M)
-   # ret = list(set(ret)) # data deduplication
+    ret = re.findall(Pattern_Email, string, re.I)
+    ret = list(set(ret)) # data deduplication
     return ret
     
 if __name__ == '__main__':
