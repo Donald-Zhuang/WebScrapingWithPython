@@ -7,7 +7,7 @@ import re
 
 ReqUrl = "http://www.shlanbao.cn/contact/"
 
-Pattern_Email = "\w[.\w]+@\w+[\.\w]*"
+Pattern_Email = "(?<=mailto:)[\w\.]+@\w+[\.\w+]*" # "\w[.\w]+@\w+[\.\w]*"
 def PrintRet(ret):
     if ret == None:
         print("[WARN] Nothing you need has been found in this website.")
