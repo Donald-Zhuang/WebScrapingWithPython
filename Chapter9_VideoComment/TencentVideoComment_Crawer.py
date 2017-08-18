@@ -7,25 +7,19 @@ import http.cookiejar
 import re
 import gzip
 import io
+import json
 
-host    = 'video.coral.qq.com'
-refer   = 'https://v.qq.com/txyp/coralComment_yp_1.0.htm'
-url_temp  = 'https://video.coral.qq.com/filmreviewr/c/upcomment/%s?commentid=%d&reqnum=%d'
+#For templates and configrations
+url_temp  = 'https://video.coral.qq.com/filmreviewr/c/upcomment/%s?commentid=%s&reqnum=%d'
 VideoId =   'yoz60y87rdgl1vp'
 
 #For Regular Expression
-##Comment Filter
-RegExp_CommentAll   = '"commentid":\[(.*?)\],"targetinfo"'
-RegExp_OneComment   = '\{("targetid":.*?,"poked":.*?)\}'
-RegExp_LastCommentId    = '"last":"(.*?)",'
 ##Content Filter
-RegExp_Content      = '"content":"(.*?)",'
-RegExp_ReplyUser    = '"replyuser":"(.*?)",'
-RegExp_User         = '"nick":"(.*?)",'
+RegExp_jQuery       = 'jQuery.*?_.*?\((.*)\)'
 
-#For DEBUG test
-url = 'https://video.coral.qq.com/filmreviewr/c/upcomment/yoz60y87rdgl1vp?commentid=6294113144277778568&reqnum=3&callback=jQuery1124031176169755473926_1502928590299&_=15029285'
-
+#For simulate the behaviour of web browser
+host    = 'video.coral.qq.com'
+refer   = 'https://v.qq.com/txyp/coralComment_yp_1.0.htm'
 Headers = {
         'Host':             host,
         'Connection':       'keep-alive',
@@ -38,48 +32,70 @@ Headers = {
         'Upgrade-Insecure-Requests':  '1',
         }
 
-cjar = None
-
 def BuildAndInstall_Opener():
-
-    global cjar
 
     cjar    = http.cookiejar.CookieJar()
     cprocs  = urllib.request.HTTPCookieProcessor(cjar)
-    httphandler  = urllib.request.HTTPHandler(debuglevel = 1)
-    httpshandler = urllib.request.HTTPSHandler(debuglevel = 1)
+    opener  = urllib.request.build_opener(cprocs)
+    #httphandler  = urllib.request.HTTPHandler(debuglevel = 1)
+    #httpshandler = urllib.request.HTTPSHandler(debuglevel = 1)
+    #opener  = urllib.request.build_opener(httpshandler, httphandler, cprocs)
     
-    opener  = urllib.request.build_opener(httpshandler, httphandler,cprocs)
     urllib.request.install_opener(opener)
 
 def Decode_GzipString(data):
+
     buf = io.BytesIO(data)
     gf  = gzip.GzipFile(fileobj = buf)
     data= gf.read()
     return data
 
-def Visit_Website(url):
+def Get_Data(url):
 
     req = urllib.request.Request(url, None, Headers)
     content = urllib.request.urlopen(req)
 
     '''get the content'''
     data = content.read()
-    response = content.info()
-    print(response)
+    #response = content.info()
+    #print(response)
 
-    '''data process'''
+    '''data process: Get full data'''
     encoding = content.getheader('Content-Encoding')
     if ( encoding == 'gzip' ):
         data = Decode_GzipString(data)
-        print('[DBG INFO] Content Encoding in GZIP')
+        #print('[DBG INFO] Content Encoding in GZIP')
+    
+    # data = re.compile(RegExp_jQuery, re.S).findall(data.decode('utf-8'))
+    if len(data) == 0:
+        print(data)
+        print('[DBG ERR ] Get Data Error ')
+    else:
+        '''Change the data from json to types in python'''
+        data = json.loads(data.decode('utf-8'))
 
-    '''print the result'''
-    ReplyUser   = re.compile(RegExp_ReplyUser).findall(data.decode('utf-8'))
-    User        = re.compile(RegExp_User).findall(data.decode('utf-8'))
+    return data['data']
 
-    print(eval('u"'+User[0]+'"'), ' reply to ', eval('u"' + ReplyUser[1] + '"'))
-
+def Analyse_Comments(data):
+    if len(data['commentid']) == 0 :
+        print('='*50,'end of comment', '='*50)
+        return '0'
+    else:
+        for comment in data['commentid']:
+            print('user:', comment['userinfo']['nick'])
+            commstr = comment['content'].replace(u'<p>',u'\r\n\t')
+            commstr = re.sub('<[a-zA-Z/]*?>', '',commstr)
+            print('comment:', commstr) 
+        return data['last']
+    
 if __name__ == '__main__':
     BuildAndInstall_Opener()
-    Visit_Website(url)
+    LastCommentId = ''
+    while True:
+        url = url_temp % (VideoId, LastCommentId, 10)        
+        data = Get_Data(url)
+        if len(data) == 0:
+            break
+        LastCommentId = Analyse_Comments(data) 
+        if LastCommentId == '0':
+            break
