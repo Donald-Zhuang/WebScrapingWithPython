@@ -1,6 +1,9 @@
 　　这阵子在学习爬虫，做练习需要一个禁止爬虫且只需添加Header就能绕过的网站。运气不错，找到一个HTTPS协议的，考虑到该网站内容比较special（人类进步的阶梯^_^），所以本文会把网站的相关信息码掉。
+
 　　python处理http协议部分，本文采用的是urllib.request，没有用[Requests](http://docs.python-requests.org/zh_CN/latest/index.html)。通过相关网站介绍可知，如果采用这个库，本文中各个实现的代码会少些，也不会遇到我后面处理的gzip解压缩问题。不过对于我这种新手来说，有时适当踩些坑有利于学习，毕竟“朝抵抗力最大的路径走”，收获的东西会更多。
+
 　　在做Demo时,Python提示--> urlopen error unknown url type: https，也就是不支持https协议。随后查到是安装Python时，系统没有安装openssl-devel导致，因此需重新安装openssl-devel库 -->具体可以参考[python内置的urllib模块不支持https协议的解决办法](http://blog.csdn.net/zyz511919766/article/details/25049365)。不同于文章介绍的，我的系统是Ubuntu，而Ubuntu采用的安装指令是下面这两条。
+
 ``` shell
 sudo apt-get install openssl
 sudo apt-get install libssl-dev
