@@ -74,7 +74,7 @@ def Build_CookieAndProxy(ProxyAddr=None):
         ProxyHandler = urllib.request.ProxyHandler({})
     
     #build and install the opener
-    Opener  = urllib.request.build_opener(CookieProcessor,ProxyHandler) 
+    Opener  = urllib.request.build_opener(ProxyHandler)#(CookieProcessor,ProxyHandler) 
     urllib.request.install_opener(Opener)
 
 def Change_Proxy():
@@ -109,6 +109,7 @@ def Find_UrlAndTitleOnPage(PageUrl):
     else:
         print('[DBG INFO] Get Title Url Here')
         data    = content.read().decode('utf-8')
+        print(data)
         Cookie.save(CookieFile, ignore_discard = True, ignore_expires = True)       # save the cookie file  
         setUrl = re.compile(RegExp_UrlTitle,re.S).findall(data)
         # setUrl = list(set(setUrl))
@@ -117,11 +118,14 @@ def Find_UrlAndTitleOnPage(PageUrl):
 def Fix_UrlAndTitle(Url, Title):
     
     UrlTitle = []
-
-    Url     = Url.replace( 'amp;', '' )
-    Title   = Title.replace( '<em><!--red_beg-->',  '' ).replace( '<!--red_end--></em>', '' )
-    UrlTitle.append(Url)
-    UrlTitle.append(Title)
+    if (Url != None) and (Title != None):
+        Url     = Url.replace( 'amp;', '' )
+        Title   = Title.replace( '<em><!--red_beg-->',  '' ).replace( '<!--red_end--></em>', '' )
+        UrlTitle.append(Url)
+        UrlTitle.append(Title)
+        print('[DBG INFO] Title: %s\r\n Url:%s'%(Title, Url))
+    else:
+        print('[DBG ERR ] Url or Title is None type')
     return UrlTitle
 
 def Save_Article(Url,Title):
