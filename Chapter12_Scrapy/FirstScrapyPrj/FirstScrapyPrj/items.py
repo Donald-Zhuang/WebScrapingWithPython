@@ -11,4 +11,8 @@ import scrapy
 class FirstscrapyprjItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
+    UrlTitle= scrapy.Field()
+    UrlKey  = scrapy.Field()
+    UrlCopyR= scrapy.Field()
+    UrlAddr = scrapy.Field()
     pass
