@@ -1,0 +1,2 @@
+2017-08-28 17:15:46 [scrapy.utils.log] INFO: Scrapy 1.4.0 started (bot: scrapybot)
+2017-08-28 17:15:46 [scrapy.utils.log] INFO: Overridden settings: {'SPIDER_LOADER_WARN_ONLY': True, 'LOG_FILE': 'ScrapyLog.log'}
