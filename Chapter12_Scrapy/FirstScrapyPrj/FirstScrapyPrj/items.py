@@ -11,7 +11,6 @@ import scrapy
 class FirstscrapyprjItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
-    RssTitle    = scrapy.Field()
-    RssLink     = scrapy.Field()
-    RssAuthor   = scrapy.Field()
+    Name    = scrapy.Field()
+    Sex     = scrapy.Field()
     pass
